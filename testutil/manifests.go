@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/docker/distribution"
@@ -73,7 +74,28 @@ func MakeSchema1Manifest(digests []digest.Digest) (distribution.Manifest, error)
 func MakeSchema2Manifest(repository distribution.Repository, digests []digest.Digest) (distribution.Manifest, error) {
 	ctx := context.Background()
 	blobStore := repository.Blobs(ctx)
-	builder := schema2.NewManifestBuilder(blobStore, schema2.MediaTypeImageConfig, []byte{})
+
+	var configJSON []byte
+
+	d, err := blobStore.Put(ctx, schema2.MediaTypeImageConfig, configJSON)
+	if err != nil {
+		return nil, fmt.Errorf("unexpected error storing content in blobstore: %v", err)
+	}
+	builder := schema2.NewManifestBuilder(d, configJSON)
+	return makeManifest(ctx, builder, digests)
+}
+
+func MakeOCIManifest(repository distribution.Repository, digests []digest.Digest) (distribution.Manifest, error) {
+	ctx := dcontext.Background()
+	blobStore := repository.Blobs(ctx)
+
+	var configJSON []byte
+
+	builder := ocischema.NewManifestBuilder(blobStore, configJSON, make(map[string]string))
+	return makeManifest(ctx, builder, digests)
+}
+
+func makeManifest(ctx context.Context, builder distribution.ManifestBuilder, digests []digest.Digest) (distribution.Manifest, error) {
 	for _, digest := range digests {
 		builder.AppendReference(distribution.Descriptor{Digest: digest})
 	}
