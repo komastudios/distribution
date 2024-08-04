@@ -11,6 +11,9 @@ http:
   addr: :5000
   headers:
     X-Content-Type-Options: [nosniff]
+  debug:
+    prometheus:
+      enabled: false
 health:
   storagedriver:
     enabled: true
