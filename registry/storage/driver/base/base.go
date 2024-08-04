@@ -228,13 +228,10 @@ func (base *Base) URLFor(ctx context.Context, path string, options map[string]in
 }
 
 // Walk wraps Walk of underlying storage driver.
-func (base *Base) Walk(ctx context.Context, path string, f storagedriver.WalkFn) error {
-	ctx, done := dcontext.WithTrace(ctx)
-	defer done("%s.Walk(%q)", base.Name(), path)
-
+func (base *Base) Walk(ctx context.Context, path string, f storagedriver.WalkFn, options ...func(*storagedriver.WalkOptions)) error {
 	if !storagedriver.PathRegexp.MatchString(path) && path != "/" {
 		return storagedriver.InvalidPathError{Path: path, DriverName: base.StorageDriver.Name()}
 	}
 
-	return base.setDriverName(base.StorageDriver.Walk(ctx, path, f))
+	return base.setDriverName(base.StorageDriver.Walk(ctx, path, f, options...))
 }

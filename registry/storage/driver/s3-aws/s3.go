@@ -915,7 +915,7 @@ func (d *driver) URLFor(ctx context.Context, path string, options map[string]int
 
 // Walk traverses a filesystem defined within driver, starting
 // from the given path, calling f on each file
-func (d *driver) Walk(ctx context.Context, from string, f storagedriver.WalkFn) error {
+func (d *driver) Walk(ctx context.Context, from string, f storagedriver.WalkFn, options ...func(*storagedriver.WalkOptions)) error {
 	path := from
 	if !strings.HasSuffix(path, "/") {
 		path = path + "/"

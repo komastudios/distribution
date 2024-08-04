@@ -122,6 +122,9 @@ func pathFor(spec pathSpec) (string, error) {
 
 	switch v := spec.(type) {
 
+	case manifestsPathSpec:
+		return path.Join(append(repoPrefix, v.name, "_manifests")...), nil
+
 	case manifestRevisionsPathSpec:
 		return path.Join(append(repoPrefix, v.name, "_manifests", "revisions")...), nil
 
@@ -251,6 +254,13 @@ func pathFor(spec pathSpec) (string, error) {
 type pathSpec interface {
 	pathSpec()
 }
+
+// manifestPathSpec describes the directory path for a manifest.
+type manifestsPathSpec struct {
+	name string
+}
+
+func (manifestsPathSpec) pathSpec() {}
 
 // manifestRevisionsPathSpec describes the directory path for
 // a manifest revision.
