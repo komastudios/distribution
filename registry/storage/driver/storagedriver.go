@@ -32,6 +32,19 @@ func (version Version) Minor() uint {
 // CurrentVersion is the current storage driver Version.
 const CurrentVersion Version = "0.1"
 
+// WalkOptions provides options to the walk function that may adjust its behaviour
+type WalkOptions struct {
+	// If StartAfterHint is set, the walk may start with the first item lexographically
+	// after the hint, but it is not guaranteed and drivers may start the walk from the path.
+	StartAfterHint string
+}
+
+func WithStartAfterHint(startAfterHint string) func(*WalkOptions) {
+	return func(s *WalkOptions) {
+		s.StartAfterHint = startAfterHint
+	}
+}
+
 // StorageDriver defines methods that a Storage Driver must implement for a
 // filesystem-like key/value object storage. Storage Drivers are automatically
 // registered via an internal registration mechanism, and generally created
