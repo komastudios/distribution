@@ -14,6 +14,11 @@ import (
 var showVersion bool
 
 func init() {
+	// check if OTEL_TRACES_EXPORTER environment variable is set, if not force it to "none"
+	if os.Getenv("OTEL_TRACES_EXPORTER") == "" {
+		os.Setenv("OTEL_TRACES_EXPORTER", "none")
+	}
+	
 	RootCmd.AddCommand(ServeCmd)
 	RootCmd.AddCommand(GCCmd)
 	GCCmd.Flags().BoolVarP(&dryRun, "dry-run", "d", false, "do everything except remove the blobs")
