@@ -1,5 +1,6 @@
 #!/bin/sh
 
+REGISTRY_BINARY=/var/opt/registry
 DEFAULT_CONFIG_PATH=/etc/distribution/config.yml
 REGISTRY_PATH=/var/lib/registry
 RUN_GC_PATH=$REGISTRY_PATH/.run_gc
@@ -19,7 +20,7 @@ run_gc() {
     GC_ARGS="$@"
   fi
 
-  registry garbage-collect "$GC_ARGS" 2>&1 | tee -a $GC_LOG_PATH
+  $REGISTRY_BINARY garbage-collect "$GC_ARGS" 2>&1 | tee -a $GC_LOG_PATH
   rm -f "$RUN_GC_PATH"
 }
 
@@ -39,7 +40,7 @@ if [ "$1" == "garbage-collect" ]; then
     return 0
   fi
   
-  $PID=$(cat $PID_FILE)
+  PID=$(cat $PID_FILE)
   echo "stopping registry (PID: $PID)"
   exec kill -TERM $PID
 elif [ "$1" == "serve" ]; then
@@ -47,4 +48,4 @@ elif [ "$1" == "serve" ]; then
   echo $$ > $PID_FILE
 fi
 
-exec registry "$@"
+exec $REGISTRY_BINARY "$@"
