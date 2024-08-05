@@ -20,7 +20,7 @@ run_gc() {
     GC_ARGS="$@"
   fi
 
-  $REGISTRY_BINARY garbage-collect "$GC_ARGS" 2>&1 | tee -a $GC_LOG_PATH
+  $REGISTRY_BINARY garbage-collect $GC_ARGS 2>&1 | tee -a $GC_LOG_PATH
   rm -f "$RUN_GC_PATH"
 }
 
