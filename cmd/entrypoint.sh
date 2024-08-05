@@ -1,7 +1,9 @@
 #!/bin/sh
 
 DEFAULT_CONFIG_PATH=/etc/distribution/config.yml
-RUN_GC_PATH=/var/lib/registry/.run_gc
+REGISTRY_PATH=/var/lib/registry
+RUN_GC_PATH=$REGISTRY_PATH/.run_gc
+GC_LOG_PATH=$REGISTRY_PATH/gc.log
 PID_FILE=/var/run/registry.pid
 
 run_gc() {
@@ -17,8 +19,8 @@ run_gc() {
     GC_ARGS="$@"
   fi
 
+  registry garbage-collect "$GC_ARGS" 2>&1 | tee -a $GC_LOG_PATH
   rm -f "$RUN_GC_PATH"
-  registry garbage-collect "$GC_ARGS"
 }
 
 if [ "$1" == "garbage-collect" ]; then
@@ -26,6 +28,7 @@ if [ "$1" == "garbage-collect" ]; then
   
   CONFIG="$1"
   echo "queueing GC..."
+  touch $GC_LOG_PATH
   if [ "${CONFIG:0:1}" == "-" ]; then
     echo "$DEFAULT_CONFIG_PATH" "$@" > $RUN_GC_PATH
   else
