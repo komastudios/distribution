@@ -45,7 +45,9 @@ if [ "$1" == "garbage-collect" ]; then
   exec kill -TERM $PID
 elif [ "$1" == "serve" ]; then
   run_gc "$@"
-  echo $$ > $PID_FILE
+  PID=$$
+  echo $PID > $PID_FILE
+  echo "starting registry (PID: $PID)"
 fi
 
 exec $REGISTRY_BINARY "$@"
