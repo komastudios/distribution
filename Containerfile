@@ -61,7 +61,8 @@ FROM docker.io/alpine:${ALPINE_VERSION}
 RUN apk add --no-cache ca-certificates
 COPY cmd/registry/config.yml /etc/distribution/config.yml
 COPY --from=binary /registry /bin/registry
+COPY cmd/entrypoint.sh /bin/entrypoint.sh
 VOLUME ["/var/lib/registry"]
 EXPOSE 5000
-ENTRYPOINT ["registry"]
+ENTRYPOINT ["/bin/entrypoint.sh"]
 CMD ["serve", "/etc/distribution/config.yml"]
