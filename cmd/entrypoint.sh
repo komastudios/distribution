@@ -2,6 +2,7 @@
 
 DEFAULT_CONFIG_PATH=/etc/distribution/config.yml
 RUN_GC_PATH=/var/lib/registry/.run_gc
+PID_FILE=/var/run/registry.pid
 
 run_gc() {
   if [ ! -f "$RUN_GC_PATH" ]; then
@@ -31,9 +32,16 @@ if [ "$1" == "garbage-collect" ]; then
     echo "$@" > $RUN_GC_PATH
   fi
   
-  exit 0
+  if [ ! -f "$PID_FILE" ]; then
+    return 0
+  fi
+  
+  $PID=$(cat $PID_FILE)
+  echo "stopping registry (PID: $PID)"
+  exec kill -TERM $PID
 elif [ "$1" == "serve" ]; then
   run_gc "$@"
+  echo $$ > $PID_FILE
 fi
 
 exec registry "$@"
