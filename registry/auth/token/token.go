@@ -186,6 +186,10 @@ func (t *Token) VerifySigningKey(verifyOpts VerifyOptions) (signingKey crypto.Pu
 		signingKey = verifyOpts.TrustedKeys[header.KeyID]
 		if signingKey == nil {
 			err = fmt.Errorf("token signed by untrusted key with ID: %q", header.KeyID)
+		} else {
+			// clear the ErrMissingX5cHeader left over from verifyCertChain:
+			// the key was resolved from the trusted JWKS by its key ID
+			err = nil
 		}
 	default:
 		err = ErrInvalidToken
